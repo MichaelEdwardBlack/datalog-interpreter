@@ -6,6 +6,13 @@ Add join and union operations to the relational database from the last project a
 - [Requirements](#requirements)
   + [Part 1](#part-1-union-and-join)
   + [Part 2](#part-2-interpreting-rules)
+- [Evaluating Rules](#evaluating-rules)
+- [Assumptions](#assumptions)
+- [Examples](#examples)
+  + [Another Example](#another-example)
+- [FAQ](#faq)
+- [Submission](#submission)
+- [Pass-off](#pass-off)
 
 ## Project Description
 Extend the [relational database](https://cswiki.cs.byu.edu/cs-236/relational-database) for Datalog to implement the rules in the input program. This means you need the union (∪) and join (⋈) operators. At the end of this project, your interpreter should be able to handle all aspects of the Datalog in this course. Please review the [project standards](https://cswiki.cs.byu.edu/cs-236/project-standards) for **the pass-off requirements as the time-bound for running time in pass-off is strictly enforced for this project.**
@@ -122,7 +129,7 @@ Review the [project standards](https://cswiki.cs.byu.edu/cs-236/project-standard
 
 Navigate to [Learning Suite](http://learningsuite.byu.edu/), select 'CS 236', and click on 'Assignments' on the course home page. Click on the link to the relevant project and at the bottom of the description click on 'View/Submit'. Use the resulting upload dialog to upload your zip archive.
 
-## Passoff
+## Pass-off
 Pass-off your project directly to a TA during normal [TA hours](https://cswiki.cs.byu.edu/cs-236/teaching-assistants). TAs help students on a first-come/first-serve basis and are under no obligation to stay later than designated hours so plan accordingly. Please review the syllabus and the [project standards](https://cswiki.cs.byu.edu/cs-236/teaching-assistants) for the pass-off requirements.
 
 [Back to Top](#datalog-interpreter)
