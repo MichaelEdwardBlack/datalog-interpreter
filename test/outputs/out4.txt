@@ -1,0 +1,2 @@
+average(X)? Yes(1)
+  X='c'

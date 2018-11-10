@@ -1,0 +1,11 @@
+test(A,'c')? Yes(2)
+  A='a'
+  A='b'
+test('b','c')? Yes(1)
+test(X,X)? Yes(1)
+  X='b'
+test(A,B)? Yes(3)
+  A='a', B='c'
+  A='b', B='b'
+  A='b', B='c'
+test('c','c')? No

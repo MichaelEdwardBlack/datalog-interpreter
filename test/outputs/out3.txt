@@ -1,0 +1,2 @@
+Grade(A)? Yes(1)
+  A='a'

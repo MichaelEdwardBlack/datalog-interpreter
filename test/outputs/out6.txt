@@ -1,0 +1,15 @@
+related('joe','jim')? Yes(1)
+related(who,'bob')? Yes(3)
+  who='bob'
+  who='jim'
+  who='joe'
+related('joe',anyone)? Yes(2)
+  anyone='bob'
+  anyone='jim'
+related(X,X)? Yes(1)
+  X='bob'
+related(X,Y)? Yes(4)
+  X='bob', Y='bob'
+  X='jim', Y='bob'
+  X='joe', Y='bob'
+  X='joe', Y='jim'
