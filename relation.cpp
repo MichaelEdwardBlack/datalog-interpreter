@@ -75,6 +75,57 @@ Relation Relation::rename(int columnPosition, string columnName) {
   return tempTable;
 }
 
+Relation Relation::join(Relation t) {
+  Relation tempTable;
+  Schema tempColumns;
+  Schema oldColumns = this->columns;
+  Schema newColumns = t.getColumns();
+  set<Tuple> oldRows = this->rows;
+  set<Tuple> newRows = t.getRows();
+  Tuple tempRow;
+  Tuple tempRowAppend;
+
+  int numOldColumns = oldColumns.size();
+  int numNewColumns = newColumns.size();
+  int oldIndexMatch;
+  int newIndexMatch;
+
+  for (int i = 0; i < numOldColumns; i++) {
+    for (int j = 0; j < numNewColumns; j++) {
+      if (oldColumns.at(i) == newColumns.at(j)) {
+        oldIndexMatch = i;
+        newIndexMatch = j;
+        tempColumns = oldColumns;
+        tempColumns.addAttributes(newColumns);
+        tempTable.addColumns(tempColumns);
+        break;
+      }
+    }
+  }
+  for (set<Tuple>::iterator oldIt = oldRows.begin(); oldIt != oldRows.end(); ++oldIt) {
+    for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
+      if (oldIt->at(oldIndexMatch) == newIt->at(newIndexMatch)) {
+        tempRow = *oldIt;
+        tempRowAppend = *newIt;
+        tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
+        tempTable.addRow(tempRow);
+      }
+    }
+  }
+  return tempTable;
+}
+
+Relation Relation::unionTable(Relation t) {
+  Relation tempTable;
+  tempTable.addColumns(this->columns);
+  tempTable.addRows(this->rows);
+  set<Tuple> newRows = t.getRows();
+  for (set<Tuple>::iterator it = newRows.begin(); it != newRows.end(); ++it) {
+    tempTable.addRow(*it);
+  }
+  return tempTable;
+}
+
 void Relation::clear() {
   columns.clear();
   rows.clear();
@@ -90,8 +141,12 @@ set<Tuple> Relation::getRows() {
   return this->rows;
 }
 
+int Relation::getColumnIndexOf(string columnName) {
+  return this->columns.getIndexOf(columnName);
+}
+
 int Relation::getNumRows() {
-  return this->numRows;
+  return this->rows.size();
 }
 
 void Relation::setName(string n) {

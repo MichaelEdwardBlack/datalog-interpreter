@@ -14,9 +14,12 @@ public:
   Relation selectColumnColumn(int column1, int column2);
 	Relation project(vector<int> indexes);
 	Relation rename(int columnPosition, string columnName);
+	Relation join(Relation t);
+	Relation unionTable(Relation t);
 	void clear();
 	Schema getColumns();
   set<Tuple> getRows();
+	int getColumnIndexOf(string columnName);
 	int getNumRows();
 	void setName(string n);
 	string getName();

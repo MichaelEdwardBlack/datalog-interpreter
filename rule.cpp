@@ -12,7 +12,7 @@ Predicate Rule::getHead() {
 }
 
 vector<Predicate> Rule::getData() {
-	return data;
+	return this->data;
 }
 
 string Rule::toString() {

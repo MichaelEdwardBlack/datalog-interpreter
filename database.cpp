@@ -1,6 +1,6 @@
 #include "database.h"
 
-Database::Database() { matchIndex = 0; }
+Database::Database() { matchIndex = 0; numRuleEvaluations = 0; changes = false; }
 
 void Database::doSchemes(vector<Predicate> schemes) {
   Relation tempTable;
@@ -43,7 +43,56 @@ void Database::doFacts(vector<Predicate> facts) {
   }
 }
 
+void Database::doRules(vector<Rule> rules) {
+  do {
+    this->changes = false;
+    int numRowsBefore;
+    int numRowsAfter;
+    this->numRuleEvaluations++;
+    this->rules = rules;
+    Relation tempTable;
+    int numRules = rules.size();
+    Predicate head;
+    string headName;
+    vector<string> headParameters;
+    int numHeadParameters;
+    vector<int> matchingColumns;
+    vector<Predicate> predicates;
+    int numPredicates;
+    for (int i = 0; i < numRules; i++) {
+      tempTable.clear();
+      matchingColumns.clear();
+      head = rules.at(i).getHead();
+      headName = head.getName();
+      headParameters = head.getParameters();
+      numHeadParameters = headParameters.size();
+      predicates = rules.at(i).getData();
+      numPredicates = predicates.size();
+
+      doQueries(predicates);
+      tempTable = this->queryResults.at(0);
+      for (int j = 1; j < numPredicates; j++) {
+        tempTable = tempTable.join(this->queryResults.at(j));
+      }
+      for (int j = 0; j < numHeadParameters; j++) {
+        matchingColumns.push_back(tempTable.getColumnIndexOf(headParameters.at(j)));
+      }
+      tempTable = tempTable.project(matchingColumns);
+      tempTable.addColumns(this->tables[headName].getColumns());
+      ruleResults.push_back(tempTable);
+      numRowsBefore = this->tables[headName].getNumRows();
+      this->tables[headName] = this->tables[headName].unionTable(tempTable);
+      numRowsAfter = this->tables[headName].getNumRows();
+      if (numRowsAfter > numRowsBefore) {
+        changes = true;
+      }
+    }
+  } while (changes);
+}
+
 void Database::doQueries(vector<Predicate> queries) {
+  this->queryResults.clear();
+  this->queries.clear();
   this->queries = queries;
   Relation tempTable;
   string tableName;
@@ -78,11 +127,6 @@ void Database::doQueries(vector<Predicate> queries) {
     tempTable = tempTable.project(projectPositions);
     this->queryResults.push_back(tempTable);
   }
-  /*1. Use the relation with the same name as the query.
-	2. Select the tuples that match the constants in the query.
-	3. Project the positions of the variables in the query.
-	4. Rename the attributes to match the variables in the query.
-	5. Use the tuples to give the values for variable X.*/
 }
 
 bool Database::match(string parameter) {
@@ -95,6 +139,13 @@ bool Database::match(string parameter) {
   }
   parameterCheck.push_back(parameter);
   return false;
+}
+
+string Database::printRuleResults() {
+  stringstream result;
+  result << "Schemes populated after " << this->numRuleEvaluations
+    << " passes through the Rules.\n\n";
+  return result.str();
 }
 
 string Database::printQueryResults() {

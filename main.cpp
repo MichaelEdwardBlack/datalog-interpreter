@@ -17,8 +17,9 @@ int main(int argc, char* argv[]) {
 	myParser.parse(myLexer.getTokens());
 	myDatabase.doSchemes(myParser.getSchemes());
 	myDatabase.doFacts(myParser.getFacts());
+	myDatabase.doRules(myParser.getRules());
+	cout << myDatabase.printRuleResults();
 	myDatabase.doQueries(myParser.getQueries());
-
 	cout << myDatabase.printQueryResults();
 
 	in.close();

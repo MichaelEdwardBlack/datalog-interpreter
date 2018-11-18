@@ -7,6 +7,14 @@ void Schema::addAttribute(string a) {
   numAttributes++;
 }
 
+void Schema::addAttributes(Schema columns) {
+  int numColumns = columns.size();
+  this->numAttributes += numColumns;
+  for (int i = 0; i < numColumns; i++) {
+    this->schema.push_back(columns.at(i));
+  }
+}
+
 void Schema::changeAttribute(int i, string v) {
   schema.at(i) = v;
 }
