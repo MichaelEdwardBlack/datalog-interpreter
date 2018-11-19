@@ -3,18 +3,26 @@ INPUT_PATH="test/inputs"
 OUTPUT_PATH="test/outputs"
 EXPECTED_PATH="test/expected_outputs"
 PROGRAM="lab4"
-
+START=$(date +%s)
+END=$(date +%s)
 if [ $# = 0 ]; then
 	g++ -g -Wall -std=c++17 -o ${PROGRAM} *.h *.cpp
 	for i in 1 2 3 4 5 6 7 8 9 10 11
 	do
+		START=$(date +%s)
 		./${PROGRAM} "${INPUT_PATH}/in${i}.txt" > "${OUTPUT_PATH}/out${i}.txt"
+		END=$(date +%s)
 		DIFF=$(diff ${OUTPUT_PATH}/out${i}.txt ${EXPECTED_PATH}/expected_out${i}.txt)
 		if [ "$DIFF" == "" ]
 		then
+			echo ""
 			echo "Test for in${i}.txt passed!"
+			echo "Runtime for test ${i} : $(($END - $START)) second(s)"
 	   	else
+			echo ""
 			echo "Test for in${i}.txt failed!"
+			echo "Runtime for test ${i} : $(($END - $START)) second(s)"
+			echo "DIFFERENCES: "
 			diff ${OUTPUT_PATH}/out${i}.txt ${EXPECTED_PATH}/expected_out${i}.txt
     		fi
 	done
@@ -24,20 +32,30 @@ while [ "$1" != "" ]; do
 		### run a specific test number ###
 		-t | --test)
 			shift
+			START=$(date +%s)
 			./${PROGRAM} "${INPUT_PATH}/in$1.txt" > "${OUTPUT_PATH}/out$1.txt"
+			END=$(date +%s)
 			DIFF=$(diff ${OUTPUT_PATH}/out$1.txt ${EXPECTED_PATH}/expected_out$1.txt)
 			if [ "$DIFF" == "" ]
 			then
+				echo ""
 				echo "Test for in$1.txt passed!"
+				echo "Runtime for test $1 : $(($END - $START)) second(s)"
 			else
+				echo ""
 				echo "Test for in$1.txt failed!"
 				tkdiff ${OUTPUT_PATH}/out$1.txt ${EXPECTED_PATH}/expected_out$1.txt
+				echo "Runtime for test $1 : $(($END - $START)) second(s)"
 			fi
 			;;
 		### run the program with a specified input file ###
 		-i | --input)
 			shift
+			START=$(date +%s)
 			./${PROGRAM} $1
+			END=$(date +%s)
+			echo ""
+			echo "Runtime for $1 : $(($END - $START)) second(s)"
 			;;
 		### run the program with no input files ###
 		-r | --run)
@@ -52,6 +70,10 @@ while [ "$1" != "" ]; do
 		-d | --display)
 			shift
 			tkdiff ${OUTPUT_PATH}/out$1.txt ${EXPECTED_PATH}/expected_out$1.txt
+			;;
+		### check memory leaks (must have input file immediately follwing the flag ###)
+		-m | --memory)
+			valgrind "--leak-check=yes ./${PROGRAM} $1"
 			;;
 		### display the help menu ###
 		-h | --help)

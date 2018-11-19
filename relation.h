@@ -16,6 +16,7 @@ public:
 	Relation rename(int columnPosition, string columnName);
 	Relation join(Relation t);
 	Relation unionTable(Relation t);
+	int match(vector<string> s, string columnName);
 	void clear();
 	Schema getColumns();
   set<Tuple> getRows();

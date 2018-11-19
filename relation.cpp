@@ -18,9 +18,8 @@ void Relation::addRows(set<Tuple> tupleSet) {
 
 Relation Relation::selectColumnValue(int columnPosition, string value) {
   Relation newTable;
-  Schema newHeader = this->columns;
   newTable.setName(this->name);
-  newTable.addColumns(newHeader);
+  newTable.addColumns(this->columns);
   for (set<Tuple>::iterator it = rows.begin(); it != rows.end(); ++it) {
     if (it->at(columnPosition) == value) {
       newTable.addRow(*it);
@@ -68,50 +67,47 @@ Relation Relation::rename(int columnPosition, string columnName) {
   Relation tempTable;
   Schema tempColumns = this->columns;
   tempColumns.changeAttribute(columnPosition, columnName);
-  set<Tuple> tempRows = rows;
   tempTable.setName(this->name);
   tempTable.addColumns(tempColumns);
-  tempTable.addRows(tempRows);
+  tempTable.addRows(this->rows);
   return tempTable;
 }
 
 Relation Relation::join(Relation t) {
   Relation tempTable;
-  Schema tempColumns;
-  Schema oldColumns = this->columns;
-  Schema newColumns = t.getColumns();
+  Schema newColumns = this->columns;
+  newColumns.addAttributes(t.getColumns());
+  tempTable.addColumns(newColumns);
+  int totalColumns = newColumns.size();
+  vector<int> projectPositions;
+  vector<string> parameterCheck;
+  int selectIndex;
+
   set<Tuple> oldRows = this->rows;
   set<Tuple> newRows = t.getRows();
   Tuple tempRow;
   Tuple tempRowAppend;
 
-  int numOldColumns = oldColumns.size();
-  int numNewColumns = newColumns.size();
-  int oldIndexMatch;
-  int newIndexMatch;
-
-  for (int i = 0; i < numOldColumns; i++) {
-    for (int j = 0; j < numNewColumns; j++) {
-      if (oldColumns.at(i) == newColumns.at(j)) {
-        oldIndexMatch = i;
-        newIndexMatch = j;
-        tempColumns = oldColumns;
-        tempColumns.addAttributes(newColumns);
-        tempTable.addColumns(tempColumns);
-        break;
-      }
-    }
-  }
   for (set<Tuple>::iterator oldIt = oldRows.begin(); oldIt != oldRows.end(); ++oldIt) {
     for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
-      if (oldIt->at(oldIndexMatch) == newIt->at(newIndexMatch)) {
-        tempRow = *oldIt;
-        tempRowAppend = *newIt;
-        tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
-        tempTable.addRow(tempRow);
-      }
+      tempRow = *oldIt;
+      tempRowAppend = *newIt;
+      tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
+      tempTable.addRow(tempRow);
     }
   }
+
+  for (int i = 0; i < totalColumns; i++) {
+    selectIndex = match(parameterCheck, newColumns.at(i));
+    if (selectIndex != -1) {
+      tempTable = tempTable.selectColumnColumn(selectIndex, i);
+    }
+    else {
+      parameterCheck.push_back(newColumns.at(i));
+      projectPositions.push_back(i);
+    }
+  }
+  tempTable = tempTable.project(projectPositions);
   return tempTable;
 }
 
@@ -124,6 +120,16 @@ Relation Relation::unionTable(Relation t) {
     tempTable.addRow(*it);
   }
   return tempTable;
+}
+
+int Relation::match(vector<string> s, string columnName) {
+  int schemaSize = s.size();
+  for (int i = 0; i < schemaSize; i++) {
+    if (s.at(i) == columnName) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 void Relation::clear() {

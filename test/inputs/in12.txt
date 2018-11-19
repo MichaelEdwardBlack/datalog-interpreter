@@ -11,7 +11,7 @@ A(a,b,c,d,e)
 Facts:
 A('a','b','c','d','e').
 # Comment the next fact to half the size
-A('f','g','h','i','j').
+# A('f','g','h','i','j').
 
 
 Rules:

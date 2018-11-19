@@ -44,21 +44,22 @@ void Database::doFacts(vector<Predicate> facts) {
 }
 
 void Database::doRules(vector<Rule> rules) {
+  int numRowsBefore;
+  int numRowsAfter;
+  Relation tempTable;
+  this->rules = rules;
+  int numRules = rules.size();
+  Predicate head;
+  string headName;
+  vector<string> headParameters;
+  int numHeadParameters;
+  vector<int> matchingColumns;
+  vector<Predicate> predicates;
+  int numPredicates;
+
   do {
     this->changes = false;
-    int numRowsBefore;
-    int numRowsAfter;
     this->numRuleEvaluations++;
-    this->rules = rules;
-    Relation tempTable;
-    int numRules = rules.size();
-    Predicate head;
-    string headName;
-    vector<string> headParameters;
-    int numHeadParameters;
-    vector<int> matchingColumns;
-    vector<Predicate> predicates;
-    int numPredicates;
     for (int i = 0; i < numRules; i++) {
       tempTable.clear();
       matchingColumns.clear();
@@ -79,7 +80,7 @@ void Database::doRules(vector<Rule> rules) {
       }
       tempTable = tempTable.project(matchingColumns);
       tempTable.addColumns(this->tables[headName].getColumns());
-      ruleResults.push_back(tempTable);
+      //ruleResults.push_back(tempTable);
       numRowsBefore = this->tables[headName].getNumRows();
       this->tables[headName] = this->tables[headName].unionTable(tempTable);
       numRowsAfter = this->tables[headName].getNumRows();
