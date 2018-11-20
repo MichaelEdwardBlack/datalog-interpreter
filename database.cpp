@@ -80,15 +80,14 @@ void Database::doRules(vector<Rule> rules) {
       }
       tempTable = tempTable.project(matchingColumns);
       tempTable.addColumns(this->tables[headName].getColumns());
-      //ruleResults.push_back(tempTable);
       numRowsBefore = this->tables[headName].getNumRows();
       this->tables[headName] = this->tables[headName].unionTable(tempTable);
       numRowsAfter = this->tables[headName].getNumRows();
       if (numRowsAfter > numRowsBefore) {
-        changes = true;
+        this->changes = true;
       }
     }
-  } while (changes);
+  } while (this->changes);
 }
 
 void Database::doQueries(vector<Predicate> queries) {

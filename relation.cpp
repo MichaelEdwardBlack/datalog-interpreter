@@ -83,12 +83,11 @@ Relation Relation::join(Relation t) {
   vector<string> parameterCheck;
   int selectIndex;
 
-  set<Tuple> oldRows = this->rows;
   set<Tuple> newRows = t.getRows();
   Tuple tempRow;
   Tuple tempRowAppend;
 
-  for (set<Tuple>::iterator oldIt = oldRows.begin(); oldIt != oldRows.end(); ++oldIt) {
+  for (set<Tuple>::iterator oldIt = this->rows.begin(); oldIt != this->rows.end(); ++oldIt) {
     for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
       tempRow = *oldIt;
       tempRowAppend = *newIt;

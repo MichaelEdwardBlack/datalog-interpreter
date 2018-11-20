@@ -18,7 +18,6 @@ public:
   string printTables(); //for testing purposes
 private:
   map<string, Relation> tables;
-  vector<Relation> ruleResults;
   vector<Rule> rules;
   vector<Relation> queryResults;
   vector<Predicate> queries;

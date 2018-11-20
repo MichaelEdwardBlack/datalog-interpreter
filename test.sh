@@ -6,7 +6,11 @@ PROGRAM="lab4"
 START=$(date +%s)
 END=$(date +%s)
 if [ $# = 0 ]; then
+	START=$(date +%s)
 	g++ -g -Wall -std=c++17 -o ${PROGRAM} *.h *.cpp
+	END=$(date +%s)
+	echo ""
+	echo "Compile Time: $(($END - $START)) seconds"
 	for i in 1 2 3 4 5 6 7 8 9 10 11
 	do
 		START=$(date +%s)
