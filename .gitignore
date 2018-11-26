@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Compressed files and folders
+*.zip
+*.tar

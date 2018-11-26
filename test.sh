@@ -26,8 +26,7 @@ if [ $# = 0 ]; then
 			echo ""
 			echo "Test for in${i}.txt failed!"
 			echo "Runtime for test ${i} : $(($END - $START)) second(s)"
-			echo "DIFFERENCES: "
-			diff ${OUTPUT_PATH}/out${i}.txt ${EXPECTED_PATH}/expected_out${i}.txt
+			tkdiff ${OUTPUT_PATH}/out${i}.txt ${EXPECTED_PATH}/expected_out${i}.txt
     		fi
 	done
 fi

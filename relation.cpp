@@ -75,39 +75,72 @@ Relation Relation::rename(int columnPosition, string columnName) {
 
 Relation Relation::join(Relation t) {
   Relation tempTable;
-  Schema newColumns = this->columns;
-  newColumns.addAttributes(t.getColumns());
-  tempTable.addColumns(newColumns);
-  int totalColumns = newColumns.size();
+  Schema newHeader;
+  Schema oldColumns = this->columns;
+  int numOldColumns = oldColumns.size();
+  Schema newColumns = t.getColumns();
+  int numNewColumns = newColumns.size();
   vector<int> projectPositions;
-  vector<string> parameterCheck;
-  int selectIndex;
+  vector<int> oldSchemaMatches;
+  vector<int> newSchemaMatches;
 
-  set<Tuple> newRows = t.getRows();
-  Tuple tempRow;
-  Tuple tempRowAppend;
-
-  for (set<Tuple>::iterator oldIt = this->rows.begin(); oldIt != this->rows.end(); ++oldIt) {
-    for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
-      tempRow = *oldIt;
-      tempRowAppend = *newIt;
-      tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
-      tempTable.addRow(tempRow);
+  for (int i = 0; i < numOldColumns; i++) {
+    projectPositions.push_back(i);
+    for (int j = 0; j < numNewColumns; j++) {
+      if (oldColumns.at(i) == newColumns.at(j)) {
+        oldSchemaMatches.push_back(i);
+        newSchemaMatches.push_back(j);
+      }
+      else {
+        projectPositions.push_back(numOldColumns + j);
+      }
     }
   }
+  oldColumns.addAttributes(newColumns);
+  tempTable.addColumns(oldColumns);
 
-  for (int i = 0; i < totalColumns; i++) {
-    selectIndex = match(parameterCheck, newColumns.at(i));
-    if (selectIndex != -1) {
-      tempTable = tempTable.selectColumnColumn(selectIndex, i);
+  int numMatches = oldSchemaMatches.size();
+  if (numMatches == 0) {
+    set<Tuple> newRows = t.getRows();
+    Tuple tempRow;
+    Tuple tempRowAppend;
+
+    for (set<Tuple>::iterator oldIt = this->rows.begin(); oldIt != this->rows.end(); ++oldIt) {
+      for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
+        tempRow = *oldIt;
+        tempRowAppend = *newIt;
+        tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
+        tempTable.addRow(tempRow);
+      }
     }
-    else {
-      parameterCheck.push_back(newColumns.at(i));
-      projectPositions.push_back(i);
-    }
+    return tempTable;
   }
-  tempTable = tempTable.project(projectPositions);
-  return tempTable;
+
+  else {
+    set<Tuple> newRows = t.getRows();
+    Tuple tempRow;
+    Tuple tempRowAppend;
+    bool fullMatch;
+    for (set<Tuple>::iterator oldIt = this->rows.begin(); oldIt != this->rows.end(); ++oldIt) {
+      for (set<Tuple>::iterator newIt = newRows.begin(); newIt != newRows.end(); ++newIt) {
+        fullMatch = true;
+        for (int i = 0; i < numMatches; i ++) {
+          if (oldIt->at(oldSchemaMatches.at(i)) != newIt->at(newSchemaMatches.at(i))) {
+            fullMatch = false;
+            break;
+          }
+        }
+        if (fullMatch) {
+          tempRow = *oldIt;
+          tempRowAppend = *newIt;
+          tempRow.insert(tempRow.end(), tempRowAppend.begin(), tempRowAppend.end());
+          tempTable.addRow(tempRow);
+        }
+      }
+    }
+    tempTable = tempTable.project(projectPositions);
+    return tempTable;
+  }
 }
 
 Relation Relation::unionTable(Relation t) {
